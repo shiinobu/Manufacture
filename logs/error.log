@@ -1,3 +1,17 @@
 ERROR: 2025/04/24 18:55:55 Failed to fetch products: sql: expected 9 destination arguments in Scan, not 8
 ERROR: 2025/04/24 19:23:18 Failed to fetch products:  sql: Scan error on column index 8, name "fMaterial": unsupported Scan, storing driver.Value type []uint8 into type *[]product_model.Material
 ERROR: 2025/04/24 19:24:25 Failed to fetch products:  sql: Scan error on column index 8, name "fMaterial": unsupported Scan, storing driver.Value type []uint8 into type *[]product_model.Material
+ERROR: 2025/04/24 23:47:32 Server failed to start:listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+ERROR: 2025/04/25 00:13:29 Invalid limit parameter: 0
+ERROR: 2025/04/25 00:14:29 Invalid limit parameter: 1
+ERROR: 2025/04/25 00:14:37 Invalid limit parameter: 2
+ERROR: 2025/04/25 00:14:56 Invalid limit parameter: 2
+ERROR: 2025/04/25 00:15:57 Invalid limit parameter: 2
+ERROR: 2025/04/25 00:15:59 Invalid limit parameter: 2
+ERROR: 2025/04/25 00:16:03 Invalid limit parameter: 1
+ERROR: 2025/04/25 00:16:31 Invalid limit parameter: 1
+ERROR: 2025/04/25 00:16:53 Invalid limit parameter: 1
+ERROR: 2025/04/25 00:17:19 Invalid limit parameter: 0
+ERROR: 2025/04/25 00:17:20 Invalid limit parameter: 0
+ERROR: 2025/04/25 00:17:23 Invalid limit parameter: 0
+ERROR: 2025/04/25 00:17:25 Invalid limit parameter: 0

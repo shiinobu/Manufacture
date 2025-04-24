@@ -5,45 +5,34 @@ import (
 	"net/http"
 
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 
-	"id.benderaku.manufacture/app/helpers"
-	"id.benderaku.manufacture/app/routes"
+	EXE "id.benderaku.manufacture/app/helpers"
+	R "id.benderaku.manufacture/app/routes"
 )
 
-type App struct {
-	Router   *mux.Router
-	INFO     *log.Logger
-	ERROR    *log.Logger
-}
-
-func (a *App) Initialize() {
-	if err := helpers.InitDB(); err != nil {
+func Initialize() {
+	if err := EXE.InitDB(); err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
 
-	loggers, err := helpers.Logs()
-	if err != nil {
+	if err := EXE.Logs(); err != nil {
 		log.Fatal("Failed to set up logging:", err)
 	}
 
-	a.INFO = loggers.INFO
-	a.ERROR = loggers.ERROR
-	a.Router = mux.NewRouter()
-	routes.RegisterRoutes(a.Router, a.INFO, a.ERROR)
+	R.RegisterRoutes()
 }
 
-func (a *App) Run(addr string) error {
+func Run(addr string) error {
 	cors := handlers.CORS(
 		handlers.AllowedOrigins([]string{"http://localhost:3040", "http://localhost:3080"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "token"}),
 		handlers.AllowCredentials(),
 	)
-	err := http.ListenAndServe(addr, cors(a.Router))
+	err := http.ListenAndServe(addr, cors(R.Router))
 	if err != nil {
-		a.ERROR.Fatal("Server failed to start:", err)
+		log.Fatal("Server failed to start:", err)
 	}
-	a.INFO.Println("Server starting on", addr)
+	log.Println("Server starting on", addr)
 	return nil
 }

@@ -1,16 +1,15 @@
 package main
 
 import (
+	"log"
 	"os"
 
-	"id.benderaku.manufacture/app"
+	App "id.benderaku.manufacture/app"
 )
 
 func main() {
-	a := app.App{}
-	a.Initialize()
-
-	if err := a.Run(":" + os.Getenv("SERVER_PORT")); err != nil {
-		a.ERROR.Fatal("Application failed: ", err)
+	App.Initialize()
+	if err := App.Run(":" + os.Getenv("SERVER_PORT")); err != nil {
+		log.Fatal("Application failed: ", err)
 	}
 }
