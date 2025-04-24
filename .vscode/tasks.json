@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build for Linux Ubuntu",
+            "type": "shell",
+            "command": "$Env:GOOS='linux'; $Env:GOARCH='amd64'; go build -o manufaktur-benderaku main.go",
+            "windows": {
+                "command": "$Env:GOOS='linux'; $Env:GOARCH='amd64'; go build -o manufaktur-benderaku main.go"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Build Go binary for Linux Ubuntu (amd64)"
+        }
+    ]
+}
