@@ -13,13 +13,13 @@ import (
 
 func ListCustomer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		supplier, total, err := customerModel.GetListCustomer(w, r)
+		customer, total, err := customerModel.GetListCustomer(w, r)
 		if err != nil {
 			EXE.ERROR.Println("Failed to fetch customers:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to fetch customers", "")
 			return
 		}
-		EXE.SendList(w, http.StatusOK, total, "Fetched customers list", supplier)
+		EXE.SendList(w, http.StatusOK, total, "Fetched customers list", customer)
 	}
 }
 
@@ -34,7 +34,7 @@ func GetCustomer() http.HandlerFunc {
 		}
 		user, err := customerModel.GetCustomerByID(id)
 		if err != nil {
-			EXE.ERROR.Println("Supplier not found:", err)
+			EXE.ERROR.Println("Customer not found:", err)
 			EXE.SendResponse(w, "", http.StatusNotFound, "Customer not found", "")
 			return
 		}
@@ -44,18 +44,24 @@ func GetCustomer() http.HandlerFunc {
 
 func CreateCustomer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var supplier customerModel.Customer
-		if err := json.NewDecoder(r.Body).Decode(&supplier); err != nil {
+		var customer customerModel.Customer
+		if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
 			EXE.ERROR.Println("Invalid request body:", err)
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := customerModel.CreateCustomer(&supplier); err != nil {
-			EXE.ERROR.Println("Failed to create supplier:", err)
+		status, err := customerModel.CreateCustomer(&customer)
+		if err != nil {
+			EXE.ERROR.Println("Failed to create customer:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create customer", "")
 			return
 		}
-		EXE.SendResponse(w, "", http.StatusOK, "Customer created successfully", supplier)
+		if *status == 0 {
+			EXE.ERROR.Println("Failed to create customer because code " + customer.Code + " already used")
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create customer because code "+customer.Code+" already used", "")
+			return
+		}
+		EXE.SendResponse(w, "", http.StatusOK, "Customer created successfully", customer)
 	}
 }
 
@@ -68,18 +74,18 @@ func UpdateCustomer() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid customer ID", "")
 			return
 		}
-		var supplier customerModel.Customer
-		if err := json.NewDecoder(r.Body).Decode(&supplier); err != nil {
+		var customer customerModel.Customer
+		if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
 			EXE.ERROR.Println("Invalid request body:", err)
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := customerModel.UpdateCustomer(id, &supplier); err != nil {
+		if err := customerModel.UpdateCustomer(id, &customer); err != nil {
 			EXE.ERROR.Println("Failed to update customer:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to update customer", "")
 			return
 		}
-		EXE.SendResponse(w, "", http.StatusOK, "Customer updated successfully", supplier)
+		EXE.SendResponse(w, "", http.StatusOK, "Customer updated successfully", customer)
 	}
 }
 
@@ -89,12 +95,12 @@ func DeleteCustomer() http.HandlerFunc {
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			EXE.ERROR.Println("Invalid customer ID:", err)
-			http.Error(w, "Invalid supplier ID", http.StatusBadRequest)
+			http.Error(w, "Invalid customer ID", http.StatusBadRequest)
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid customer ID", "")
 			return
 		}
 		if err := customerModel.DeleteCustomer(id); err != nil {
-			EXE.ERROR.Println("Failed to delete supplier:", err)
+			EXE.ERROR.Println("Failed to delete customer:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to delete customer", "")
 			return
 		}

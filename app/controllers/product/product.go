@@ -64,9 +64,15 @@ func CreateProduct() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := productModel.CreateProduct(&product); err != nil {
+		status, err := productModel.CreateProduct(&product)
+		if err != nil {
 			EXE.ERROR.Println("Failed to create product:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create product", "")
+			return
+		}
+		if *status == 0 {
+			EXE.ERROR.Println("Failed to create product because code " + product.SKU + " already used")
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create product because code "+product.SKU+" already used", "")
 			return
 		}
 		EXE.SendResponse(w, "", http.StatusOK, "Product created successfully", product)

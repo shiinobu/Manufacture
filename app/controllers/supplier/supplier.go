@@ -50,9 +50,15 @@ func CreateSupplier() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := supplierModel.CreateSupplier(&supplier); err != nil {
+		status, err := supplierModel.CreateSupplier(&supplier)
+		if err != nil {
 			EXE.ERROR.Println("Failed to create supplier:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create supplier", "")
+			return
+		}
+		if *status == 0 {
+			EXE.ERROR.Println("Failed to create supplier because code " + supplier.Code + " already used")
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create supplier because code "+supplier.Code+" already used", "")
 			return
 		}
 		EXE.SendResponse(w, "", http.StatusOK, "Supplier created successfully", supplier)

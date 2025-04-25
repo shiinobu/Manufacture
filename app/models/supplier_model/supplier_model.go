@@ -9,15 +9,15 @@ import (
 )
 
 type Supplier struct {
-    ID      int    `json:"id"`
-    Code    string `json:"code"`
-    Name    string `json:"name"`
-    Address string `json:"address"`
-    Status  int    `json:"-"`
+	ID      int    `json:"id"`
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Status  int    `json:"-"`
 }
 
 func GetListSupplier(writ http.ResponseWriter, req *http.Request) ([]Supplier, int, error) {
-    param := req.URL.Query()
+	param := req.URL.Query()
 	pageStr := param.Get("page")
 	limitStr := param.Get("limit")
 	page := 1
@@ -44,20 +44,20 @@ func GetListSupplier(writ http.ResponseWriter, req *http.Request) ([]Supplier, i
 	}
 
 	offset := (page - 1) * limit
-    rows, err := EXE.QueryParams("SELECT id, fKode, fNama, fAlamat FROM tsupplier WHERE fDelete = 0 LIMIT ? OFFSET ?", []any{limit, offset})
-    if err != nil {
-        return nil, 0, err
-    }
+	rows, err := EXE.QueryParams("SELECT id, fKode, fNama, fAlamat FROM tsupplier WHERE fDelete = 0 LIMIT ? OFFSET ?", []any{limit, offset})
+	if err != nil {
+		return nil, 0, err
+	}
 
-    suppliers := []Supplier{}
-    for rows.Next() {
+	suppliers := []Supplier{}
+	for rows.Next() {
 		var supplier Supplier
 		if err := rows.Scan(&supplier.ID, &supplier.Code, &supplier.Name, &supplier.Address); err != nil {
 			return nil, 0, err
 		}
 		suppliers = append(suppliers, supplier)
 	}
-    var totalCount int
+	var totalCount int
 	res, err := EXE.Query("SELECT COUNT(id) FROM tsupplier WHERE fDelete = 0 LIMIT 1")
 	if err != nil {
 		return nil, 0, err
@@ -73,56 +73,67 @@ func GetListSupplier(writ http.ResponseWriter, req *http.Request) ([]Supplier, i
 }
 
 func GetSupplierByID(id int) (*Supplier, error) {
-    rows, err := EXE.QueryParams("SELECT id, fKode, fNama, fAlamat FROM tsupplier WHERE id = ? AND fDelete = 0 LIMIT 1", []any{id})
-    supplier := &Supplier{}
-    if err != nil {
-        return nil, err
-    }
-    if rows.Next() {
-        if err = rows.Scan(&supplier.ID, &supplier.Code, &supplier.Name, &supplier.Address); err != nil {
-            return nil, err
-        }
-    }
-    return supplier, nil
-}
-
-func CheckStatusSupplier(code string) (int, error) {
-    supplier := &Supplier{}
-    rows, err := EXE.QueryParams("SELECT fDelete FROM tsupplier WHERE fKode = ? LIMIT 1", []any{code})
-    if err != nil {
-        return 0, err
-    }
-    if rows.Next() {
-        if err = rows.Scan(&supplier.Status); err != nil {
-            return 0, err
-        }
-    }
-    return supplier.Status, nil
-}
-
-func CreateSupplier(supplier *Supplier) error {
-	status, err := CheckStatusSupplier(supplier.Code)
+	rows, err := EXE.QueryParams("SELECT id, fKode, fNama, fAlamat FROM tsupplier WHERE id = ? AND fDelete = 0 LIMIT 1", []any{id})
+	supplier := &Supplier{}
 	if err != nil {
-		if (status == 1) {
-			_, err = EXE.QueryExec("UPDATE tsupplier SET fNama = ?, fAlamat = ?, fDelete = 0 WHERE fKode = ?", []any{supplier.Name, supplier.Address, supplier.Code})
-		} else {
-			_, err = EXE.QueryExec("INSERT INTO tsupplier (fKode, fNama, fAlamat) VALUES (?, ?, ?)", []any{supplier.Code, supplier.Name, supplier.Address})
+		return nil, err
+	}
+	if rows.Next() {
+		if err = rows.Scan(&supplier.ID, &supplier.Code, &supplier.Name, &supplier.Address); err != nil {
+			return nil, err
 		}
 	}
-    return err
+	return supplier, nil
+}
+
+func CheckStatusSupplier(code string) (string, error) {
+	supplier := &Supplier{}
+	rows, err := EXE.QueryParams("SELECT fDelete FROM tsupplier WHERE fKode = ? LIMIT 1", []any{code})
+	if err != nil {
+		return "", err
+	}
+	if rows.Next() {
+		if err = rows.Scan(&supplier.Status); err != nil {
+			return "", err
+		}
+		if supplier.Status == 0 {
+			return "EXIST", nil
+		}
+		if supplier.Status == 1 {
+			return "UPDATE", nil
+		}
+	}
+	return "INSERT", nil
+}
+
+func CreateSupplier(supplier *Supplier) (*int, error) {
+	var status int
+	result, err := EXE.Nullable(supplier.Address)
+	if err != nil {
+		result = supplier.Address
+	}
+	action, err := CheckStatusSupplier(supplier.Code)
+	if err != nil {
+		return nil, err
+	}
+	if action == "EXIST" {
+		status = 0
+	} else if action == "INSERT" {
+		status = 1
+		_, err = EXE.QueryExec("INSERT INTO tsupplier (fKode, fNama, fAlamat) VALUES (?, ?, ?)", []any{supplier.Code, supplier.Name, result})
+	} else {
+		status = 2
+		_, err = EXE.QueryExec("UPDATE tsupplier SET fNama = ?, fAlamat = ?, fDelete = 0 WHERE fKode = ?", []any{supplier.Name, result, supplier.Code})
+	}
+	return &status, err
 }
 
 func UpdateSupplier(id int, supplier *Supplier) error {
-    _, err := EXE.QueryExec("UPDATE tsupplier SET fNama = ?, fAlamat = ? WHERE id = ? AND fDelete = 0", []any{supplier.Name, supplier.Address, id})
-    return err
-}
-
-func UpdateStatusSupplier(id int, supplier *Supplier) error {
-    _, err := EXE.QueryExec("UPDATE tsupplier SET fNama = ?, fAlamat = ?, fDelete = 0 WHERE id = ?", []any{supplier.Name, supplier.Address, id})
-    return err
+	_, err := EXE.QueryExec("UPDATE tsupplier SET fNama = ?, fAlamat = ? WHERE id = ? AND fDelete = 0", []any{supplier.Name, supplier.Address, id})
+	return err
 }
 
 func DeleteSupplier(id int) error {
-    _, err := EXE.QueryExec("UPDATE tsupplier SET fDelete = 1 WHERE id = ?", []any{id})
-    return err
+	_, err := EXE.QueryExec("UPDATE tsupplier SET fDelete = 1 WHERE id = ?", []any{id})
+	return err
 }

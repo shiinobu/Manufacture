@@ -1,67 +1,18 @@
-ERROR: 2025/04/25 16:04:22 user.go:18: Failed to fetch users:  sql: expected 7 destination arguments in Scan, not 4
-ERROR: 2025/04/25 16:04:24 user.go:18: Failed to fetch users:  sql: expected 7 destination arguments in Scan, not 4
-ERROR: 2025/04/25 16:04:24 user.go:18: Failed to fetch users:  sql: expected 7 destination arguments in Scan, not 4
-ERROR: 2025/04/25 16:05:28 user.go:18: Failed to fetch users:  sql: expected 7 destination arguments in Scan, not 4
-ERROR: 2025/04/25 16:05:28 user.go:18: Failed to fetch users:  sql: expected 7 destination arguments in Scan, not 4
-ERROR: 2025/04/25 16:05:57 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:06:00 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:06:29 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:06:30 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:06:37 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:06:37 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:07:00 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:07:00 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:07:18 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:07:18 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:17 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:32 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:32 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:34 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:35 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:46 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:46 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:47 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:47 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:48 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:49 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:08:49 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:12:01 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:12:38 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:13:37 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:13:50 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:14:16 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:14:18 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:15:35 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:15:35 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:15:54 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:18:36 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:18:36 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:35 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:35 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:42 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:44 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:45 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:19:46 user.go:18: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:02 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:02 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:04 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:05 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:06 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:06 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:07 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:07 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:08 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:08 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:09 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:09 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:39:10 user.go:19: Failed to fetch users:  sql: Scan error on column index 4, name "fFullname": converting NULL to string is unsupported
-ERROR: 2025/04/25 16:47:08 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:47:32 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:48:45 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:48:47 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:48:50 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:48:53 user.go:62: User is exist, Try another email! <nil>
-ERROR: 2025/04/25 16:57:03 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:57:21 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:57:43 user.go:55: Failed to create user: Error 1136 (21S01): Column count doesn't match value count at row 1
-ERROR: 2025/04/25 16:59:34 user.go:55: Failed to create user: Error 1062 (23000): Duplicate entry '22@example.com' for key 'fEmail'
+INFO: 2025/04/25 22:21:51 user_model.go:142: &{0 admins  123 22@example.com 0 0 0}
+ERROR: 2025/04/25 22:21:51 user.go:61: Failed to create user because email already used
+INFO: 2025/04/25 22:25:45 user_model.go:142: &{0 admins  123 22@example.com 0 0 0}
+INFO: 2025/04/25 22:28:58 user_model.go:142: &{0 admins  123 22@example.com 0 0 0}
+ERROR: 2025/04/25 22:47:58 user.go:61: Failed to create user because email already used
+ERROR: 2025/04/25 22:51:40 user.go:61: Failed to create user because email already used
+ERROR: 2025/04/25 23:12:17 auth.go:69: Invalid password: crypto/bcrypt: hashedSecret too short to be a bcrypted password
+ERROR: 2025/04/25 23:12:24 auth.go:69: Invalid password: crypto/bcrypt: hashedSecret too short to be a bcrypted password
+ERROR: 2025/04/25 23:12:33 auth.go:69: Invalid password: crypto/bcrypt: hashedSecret too short to be a bcrypted password
+ERROR: 2025/04/25 23:13:52 auth.go:69: Invalid password: crypto/bcrypt: hashedSecret too short to be a bcrypted password
+ERROR: 2025/04/25 23:13:59 auth.go:69: Invalid password: crypto/bcrypt: hashedSecret too short to be a bcrypted password
+ERROR: 2025/04/25 23:16:13 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/25 23:16:38 product.go:74: Failed to create product because code TLR01 already used
+ERROR: 2025/04/25 23:18:19 product.go:74: Failed to create product because code TLR01 already used
+ERROR: 2025/04/25 23:18:20 product.go:74: Failed to create product because code TLR01 already used
+ERROR: 2025/04/25 23:19:16 product.go:74: Failed to create product because code TLR01 already used
+ERROR: 2025/04/25 23:24:21 product.go:74: Failed to create product because code TLR01 already used
+ERROR: 2025/04/25 23:36:48 supplier.go:60: Failed to create supplier because code BBS already used

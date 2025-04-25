@@ -138,44 +138,58 @@ func GetProductByID(id int) (*Product, error) {
 	return product, nil
 }
 
-func CheckStatusProduct(code string) (int, error) {
+func CheckStatusProduct(code string) (string, error) {
 	product := &Product{}
 	rows, err := EXE.QueryParams("SELECT fDelete FROM tproducts WHERE fKodeBrg = ? LIMIT 1", []any{code})
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	if rows.Next() {
 		if err = rows.Scan(&product.Status); err != nil {
-			return 0, err
+			return "", err
+		}
+		if product.Status == 0 {
+			return "EXIST", nil
+		}
+		if product.Status == 1 {
+			return "UPDATE", nil
 		}
 	}
-	return product.Status, nil
+	return "INSERT", nil
 }
 
-func CreateProduct(product *Product) error {
+func CreateProduct(product *Product) (*int, error) {
+	var status int
 	var material []byte
 	if len(product.Items) > 0 {
 		json, err := json.Marshal(product.Items)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		material = json
 	} else {
 		material = nil
 	}
-	convert, err := EXE.Nullable(material)
-	if err != nil {
-		return err
+	result1, err1 := EXE.Nullable(material)
+	result2, err2 := EXE.Nullable(product.Unit)
+	if err1 != nil || err2 != nil {
+		result1 = product.Items
+		result2 = product.Unit
 	}
-	status, err := CheckStatusProduct(product.SKU)
+	action, err := CheckStatusProduct(product.SKU)
 	if err != nil {
-		if (status == 1) {
-			_, err = EXE.QueryExec("UPDATE tproducts SET fNamaBrg = ?, fSatuan = ?, fType = ?, fBeli = ?, fJual = ?, fQuality = ?, fStock = ?, fDelete = 0 WHERE fKodeBrg = ?", []any{product.Name, product.Unit, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, product.SKU})
-		} else {
-			_, err = EXE.QueryExec("INSERT INTO tproducts (fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock, fMaterial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", []any{product.SKU, product.Name, product.Unit, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, convert})
-		}
+		return nil, err
 	}
-	return err
+	if action == "EXIST" {
+		status = 0
+	} else if action == "INSERT" {
+		status = 1
+		_, err = EXE.QueryExec("INSERT INTO tproducts (fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock, fMaterial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", []any{product.SKU, product.Name, result2, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, result1})
+	} else {
+		status = 2
+		_, err = EXE.QueryExec("UPDATE tproducts SET fNamaBrg = ?, fSatuan = ?, fType = ?, fBeli = ?, fJual = ?, fQuality = ?, fStock = ?, fMaterial = ?, fDelete = 0 WHERE fKodeBrg = ?", []any{product.Name, result2, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, result1, product.SKU})
+	}
+	return &status, err
 }
 
 func UpdateProduct(id int, product *Product) error {

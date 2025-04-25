@@ -13,7 +13,7 @@ import (
 func Activation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var creds struct {
-			Email string `json:"email"`
+			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -21,27 +21,23 @@ func Activation() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-
 		user, err := userModel.GetUserByEmail(creds.Email)
 		if err != nil {
 			EXE.ERROR.Println("User not found:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "User not found", "")
 			return
 		}
-
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil {
 			EXE.ERROR.Println("Invalid password:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "Invalid password", "")
 			return
 		}
-
 		token, err := EXE.GenerateToken(user.ID)
 		if err != nil {
 			EXE.ERROR.Println("Failed to generate token:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to generated token", "")
 			return
 		}
-
 		EXE.SendResponse(w, token, http.StatusOK, "Logged in successfully", "")
 	}
 }
@@ -49,7 +45,7 @@ func Activation() http.HandlerFunc {
 func Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var creds struct {
-			Email string `json:"email"`
+			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -57,27 +53,28 @@ func Login() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-
 		user, err := userModel.GetUserByEmail(creds.Email)
 		if err != nil {
 			EXE.ERROR.Println("User not found:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "User not found", "")
 			return
 		}
-
+		if user.Islogin == 0 {
+			EXE.ERROR.Println("User not activated, please activated first")
+			EXE.SendResponse(w, "", http.StatusUnauthorized, "User not activated, please activated first", "")
+			return
+		}
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil {
 			EXE.ERROR.Println("Invalid password:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "Invalid password", "")
 			return
 		}
-
 		token, err := EXE.GenerateToken(user.ID)
 		if err != nil {
 			EXE.ERROR.Println("Failed to generate token:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to generated token", "")
 			return
 		}
-
 		EXE.SendResponse(w, token, http.StatusOK, "Logged in successfully", "")
 	}
 }

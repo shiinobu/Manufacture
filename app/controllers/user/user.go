@@ -51,9 +51,15 @@ func CreateUser() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := userModel.CreateUser(&user); err != nil {
+		status, err := userModel.CreateUser(&user)
+		if err != nil {
 			EXE.ERROR.Println("Failed to create user:", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create user", "")
+			return
+		}
+		if *status == 0 {
+			EXE.ERROR.Println("Failed to create user because email already used")
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create user because email already taken", "")
 			return
 		}
 		EXE.SendResponse(w, "", http.StatusOK, "User created successfully", user)

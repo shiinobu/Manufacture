@@ -10,11 +10,11 @@ import (
 )
 
 type DB struct {
-    DBUSER      string
-    DBPASS      string
-    DBNAME      string
-    DBPORT      string
-    DBHOST      string
+	DBUSER string
+	DBPASS string
+	DBNAME string
+	DBPORT string
+	DBHOST string
 }
 
 var RunDB *sql.DB
@@ -60,35 +60,25 @@ func Connection(dbuser, dbpassword, dbname, dbport, dbhost string) error {
 }
 
 func Query(query string) (*sql.Rows, error) {
-    rows, err := RunDB.Query(query)
-    if err != nil {
-        return nil, err
-    }
-    return rows, nil
+	rows, err := RunDB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func QueryParams(query string, params []any) (*sql.Rows, error) {
-    rows, err := RunDB.Query(query, params...)
-    if err != nil {
-        return nil, err
-    }
-    return rows, nil
+	rows, err := RunDB.Query(query, params...)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func QueryExec(query string, params []any) (res sql.Result, err error) {
-    res, err = RunDB.Exec(query, params...)
-    if err != nil {
-        return nil, err
-    }
-    return res, nil
-}
-
-func Nullable(data []byte) (any, error) {
-	var json sql.NullString
-	if data != nil {
-		json = sql.NullString{String: string(data), Valid: true}
-	} else {
-		json = sql.NullString{Valid: false}
+	res, err = RunDB.Exec(query, params...)
+	if err != nil {
+		return nil, err
 	}
-	return json, nil
+	return res, nil
 }

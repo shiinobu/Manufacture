@@ -93,47 +93,62 @@ func GetUserByID(id int) (*User, error) {
 
 func GetUserByEmail(email string) (*User, error) {
 	user := &User{}
-	rows, err := EXE.QueryParams("SELECT id, fPassword FROM tusers WHERE fEmail = ? AND fDelete = 0 AND fIsLogin = 1 LIMIT 1", []any{email})
+	rows, err := EXE.QueryParams("SELECT id, fPassword, fIsLogin FROM tusers WHERE fEmail = ? AND fDelete = 0 LIMIT 1", []any{email})
 	if err != nil {
 		return nil, err
 	}
 	if rows.Next() {
-		if err = rows.Scan(&user.ID, &user.Password); err != nil {
+		if err = rows.Scan(&user.ID, &user.Password, &user.Islogin); err != nil {
 			return nil, err
 		}
 	}
 	return user, nil
 }
 
-func CheckStatusUser(email string) (int, error) {
+func CheckStatusUser(email string) (string, error) {
 	user := &User{}
 	rows, err := EXE.QueryParams("SELECT fDelete FROM tusers WHERE fEmail = ? LIMIT 1", []any{email})
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	if rows.Next() {
 		if err = rows.Scan(&user.Status); err != nil {
-			return 0, err
+			return "", err
+		}
+		if user.Status == 0 {
+			return "EXIST", nil
+		}
+		if user.Status == 1 {
+			return "UPDATE", nil
 		}
 	}
-	return user.Status, nil
+	return "INSERT", nil
 }
 
-func CreateUser(user *User) error {
+func CreateUser(user *User) (*int, error) {
+	var status int
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	status, err := CheckStatusUser(user.Email)
+	result, err := EXE.Nullable(user.Fullname)
 	if err != nil {
-		return err
+		result = user.Fullname
 	}
-	if status == 0 {
-		_, err = EXE.QueryExec("INSERT INTO tusers (fEmail, fUsername, fFullname, fPassword, fRole) VALUES (?, ?, ?, ?, ?)", []any{user.Email, user.Username, user.Fullname, string(hashedPassword), user.Role})
+	action, err := CheckStatusUser(user.Email)
+	if err != nil {
+		return nil, err
+	}
+	if action == "EXIST" {
+		status = 0
+	} else if action == "INSERT" {
+		status = 1
+		_, err = EXE.QueryExec("INSERT INTO tusers (fEmail, fUsername, fFullname, fPassword, fRole) VALUES (?, ?, ?, ?, ?)", []any{user.Email, user.Username, result, string(hashedPassword), user.Role})
 	} else {
-		_, err = EXE.QueryExec("UPDATE tusers SET fUsername = ?, fPassword = ?, fIsLogin = 0, fDelete = 0, fFullname = ?, fRole = ? WHERE fEmail = ?", []any{user.Username, string(hashedPassword), user.Fullname, user.Role, user.Email})
+		status = 2
+		_, err = EXE.QueryExec("UPDATE tusers SET fUsername = ?, fPassword = ?, fIsLogin = 0, fDelete = 0, fFullname = ?, fRole = ? WHERE fEmail = ?", []any{user.Username, string(hashedPassword), result, user.Role, user.Email})
 	}
-	return err
+	return &status, err
 }
 
 func UpdateUser(id int, user *User) error {
