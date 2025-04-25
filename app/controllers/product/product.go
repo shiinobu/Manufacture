@@ -19,7 +19,6 @@ func ListProduct() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to fetch products", "")
 			return
 		}
-
 		EXE.SendList(w, http.StatusOK, total, "Fetched products list", products)
 	}
 }

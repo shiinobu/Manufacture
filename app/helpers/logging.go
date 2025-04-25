@@ -40,7 +40,7 @@ func Logs() error {
 }
 
 func Setup(logfile *os.File) error {
-	INFO = log.New(logfile, "INFO: ", log.Ldate|log.Ltime)
-	ERROR = log.New(logfile, "ERROR: ", log.Ldate|log.Ltime)
+	INFO = log.New(logfile, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	ERROR = log.New(logfile, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 	return nil
 }

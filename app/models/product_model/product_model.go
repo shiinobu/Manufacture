@@ -1,7 +1,6 @@
 package product_model
 
 import (
-	"database/sql"
 	"encoding/json"
 	"math"
 	"net/http"
@@ -23,6 +22,7 @@ type Product struct {
 	Buy     float64    `json:"buy"`
 	Sell    float64    `json:"sell"`
 	Quality string     `json:"quality"`
+	Unit    string     `json:"unit"`
 	Stock   int        `json:"stock"`
 	Status  int        `json:"-"`
 	Items   []Material `json:"items"`
@@ -68,8 +68,7 @@ func GetListProducts(writ http.ResponseWriter, req *http.Request) ([]Product, in
 	}
 
 	offset := (page - 1) * limit
-	query := "SELECT id, fKodeBrg, fNamaBrg, fType, fBeli, fJual, fQuality, fStock, fMaterial FROM tproducts WHERE fType = ? AND fDelete = 0 LIMIT ? OFFSET ?"
-	rows, err := EXE.QueryParams(query, []any{tipe, limit, offset})
+	rows, err := EXE.QueryParams("SELECT id, fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock, fMaterial FROM tproducts WHERE fType = ? AND fDelete = 0 LIMIT ? OFFSET ?", []any{tipe, limit, offset})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -78,7 +77,7 @@ func GetListProducts(writ http.ResponseWriter, req *http.Request) ([]Product, in
 	for rows.Next() {
 		var product Product
 		var materialsJSON []byte
-		if err := rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock, &materialsJSON); err != nil {
+		if err := rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Unit, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock, &materialsJSON); err != nil {
 			return nil, 0, err
 		}
 		if len(materialsJSON) > 0 {
@@ -89,13 +88,12 @@ func GetListProducts(writ http.ResponseWriter, req *http.Request) ([]Product, in
 			product.Items = materials
 		} else {
 			product.Items = nil
-
 		}
 		products = append(products, product)
 	}
 
 	var totalCount int
-	res, err := EXE.QueryParams("SELECT COUNT(id) FROM tproducts WHERE fType = ? AND fDelete = 0", []any{tipe})
+	res, err := EXE.QueryParams("SELECT COUNT(id) FROM tproducts WHERE fType = ? AND fDelete = 0 LIMIT 1", []any{tipe})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -110,8 +108,7 @@ func GetListProducts(writ http.ResponseWriter, req *http.Request) ([]Product, in
 }
 
 func GetProductMaterials() ([]Product, error) {
-	query := "SELECT id, fKodeBrg, fNamaBrg, fType, fBeli, fJual, fQuality, fStock FROM tproducts WHERE (fType = 0 OR fType = 1) AND fDelete = 0"
-	rows, err := EXE.Query(query)
+	rows, err := EXE.Query("SELECT id, fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock FROM tproducts WHERE (fType = 0 OR fType = 1) AND fDelete = 0")
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +116,7 @@ func GetProductMaterials() ([]Product, error) {
 	products := []Product{}
 	for rows.Next() {
 		var product Product
-		if err := rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock); err != nil {
+		if err := rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Unit, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock); err != nil {
 			return nil, err
 		}
 		products = append(products, product)
@@ -129,44 +126,64 @@ func GetProductMaterials() ([]Product, error) {
 
 func GetProductByID(id int) (*Product, error) {
 	product := &Product{}
-	query := "SELECT id, fKodeBrg, fNamaBrg, fType, fBeli, fJual, fQuality, fStock FROM tproducts WHERE id = ? AND fDelete = 0"
-	rows, err := EXE.QueryParams(query, []any{id})
+	rows, err := EXE.QueryParams("SELECT id, fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock, fMaterial FROM tproducts WHERE id = ? AND fDelete = 0 LIMIT 1", []any{id})
 	if err != nil {
 		return nil, err
 	}
 	if rows.Next() {
-		if err = rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock); err != nil {
+		if err = rows.Scan(&product.ID, &product.SKU, &product.Name, &product.Unit, &product.Type, &product.Buy, &product.Sell, &product.Quality, &product.Stock, &product.Items); err != nil {
 			return nil, err
 		}
 	}
 	return product, nil
 }
 
+func CheckStatusProduct(code string) (int, error) {
+	product := &Product{}
+	rows, err := EXE.QueryParams("SELECT fDelete FROM tproducts WHERE fKodeBrg = ? LIMIT 1", []any{code})
+	if err != nil {
+		return 0, err
+	}
+	if rows.Next() {
+		if err = rows.Scan(&product.Status); err != nil {
+			return 0, err
+		}
+	}
+	return product.Status, nil
+}
+
 func CreateProduct(product *Product) error {
-	var materialJSON sql.NullString
+	var material []byte
 	if len(product.Items) > 0 {
-		jsonBytes, err := json.Marshal(product.Items)
+		json, err := json.Marshal(product.Items)
 		if err != nil {
 			return err
 		}
-		materialJSON.String = string(jsonBytes)
-		materialJSON.Valid = true
+		material = json
 	} else {
-		materialJSON.Valid = false
+		material = nil
 	}
-	query := "INSERT INTO tproducts (fKodeBrg, fNamaBrg, fType, fBeli, fJual, fQuality, fStock, fMaterial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-	_, err := EXE.QueryExec(query, []any{product.SKU, product.Name, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, materialJSON})
+	convert, err := EXE.Nullable(material)
+	if err != nil {
+		return err
+	}
+	status, err := CheckStatusProduct(product.SKU)
+	if err != nil {
+		if (status == 1) {
+			_, err = EXE.QueryExec("UPDATE tproducts SET fNamaBrg = ?, fSatuan = ?, fType = ?, fBeli = ?, fJual = ?, fQuality = ?, fStock = ?, fDelete = 0 WHERE fKodeBrg = ?", []any{product.Name, product.Unit, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, product.SKU})
+		} else {
+			_, err = EXE.QueryExec("INSERT INTO tproducts (fKodeBrg, fNamaBrg, fSatuan, fType, fBeli, fJual, fQuality, fStock, fMaterial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", []any{product.SKU, product.Name, product.Unit, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, convert})
+		}
+	}
 	return err
 }
 
 func UpdateProduct(id int, product *Product) error {
-	query := "UPDATE tproducts SET fNamaBrg = ?, fType = ?, fBeli = ?, fJual = ?, fQuality = ?, fStock = ? WHERE id = ?"
-	_, err := EXE.QueryExec(query, []any{product.Name, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, id})
+	_, err := EXE.QueryExec("UPDATE tproducts SET fNamaBrg = ?, fSatuan = ?, fType = ?, fBeli = ?, fJual = ?, fQuality = ?, fStock = ? WHERE id = ?", []any{product.Name, product.Unit, product.Type, product.Buy, product.Sell, product.Quality, product.Stock, id})
 	return err
 }
 
 func DeleteProduct(id int) error {
-	query := "UPDATE tproducts SET fDelete = 1 WHERE id = ? AND fDelete = 0"
-	_, err := EXE.QueryExec(query, []any{id})
+	_, err := EXE.QueryExec("UPDATE tproducts SET fDelete = 1 WHERE id = ? AND fDelete = 0", []any{id})
 	return err
 }

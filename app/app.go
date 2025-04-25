@@ -24,7 +24,7 @@ func Initialize() {
 
 func Run(addr string) error {
 	cors := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3040", "http://localhost:3080"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3040", "http://localhost:3080", "https://manufaktur-dev.benderaku.id"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "token"}),
 		handlers.AllowCredentials(),

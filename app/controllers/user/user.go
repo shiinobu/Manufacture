@@ -13,13 +13,12 @@ import (
 
 func ListUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users, total, err := userModel.GetAllUsers(w, r)
+		users, total, err := userModel.GetListUsers(w, r)
 		if err != nil {
 			EXE.ERROR.Println("Failed to fetch users: ", err)
 			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to fetch users", "")
 			return
 		}
-
 		EXE.SendList(w, http.StatusOK, total, "Fetched users list", users)
 	}
 }
@@ -30,54 +29,34 @@ func GetUser() http.HandlerFunc {
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			EXE.ERROR.Println("Invalid user ID:", err)
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid user ID", "")
 			return
 		}
 		user, err := userModel.GetUserByID(id)
 		if err != nil {
 			EXE.ERROR.Println("User not found:", err)
-			http.Error(w, "User not found", http.StatusNotFound)
+			EXE.SendResponse(w, "", http.StatusNotFound, "User not found", "")
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
+		EXE.SendResponse(w, "", http.StatusOK, "Fetched users details", user)
 	}
 }
 
 func CreateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user userModel.User
-
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			EXE.ERROR.Println("Invalid request body:", err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-
-		isActive, err := userModel.CheckStatusUser(user.Username, user.Email)
-		if err != nil {
-			if err := userModel.CreateUser(&user); err != nil {
-				EXE.ERROR.Println("Failed to create user:", err)
-				http.Error(w, "Failed to create user", http.StatusInternalServerError)
-				return
-			}
-		} else {
-			if isActive.Status == 0 {
-				if err := userModel.CreateUser(&user); err != nil {
-					EXE.ERROR.Println("Failed to create user:", err)
-					http.Error(w, "Failed to create user", http.StatusInternalServerError)
-					return
-				}
-			} else {
-				if err := userModel.UpdateStatusUser(isActive.ID, &user); err != nil {
-					EXE.ERROR.Println("Failed to create user:", err)
-					http.Error(w, "Failed to create user", http.StatusInternalServerError)
-					return
-				}
-			}
+		if err := userModel.CreateUser(&user); err != nil {
+			EXE.ERROR.Println("Failed to create user:", err)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create user", "")
+			return
 		}
-
-		w.WriteHeader(http.StatusCreated)
+		EXE.SendResponse(w, "", http.StatusOK, "User created successfully", user)
 	}
 }
 
@@ -87,21 +66,21 @@ func UpdateUser() http.HandlerFunc {
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			EXE.ERROR.Println("Invalid user ID:", err)
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid user ID", "")
 			return
 		}
 		var user userModel.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			EXE.ERROR.Println("Invalid request body:", err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
 		if err := userModel.UpdateUser(id, &user); err != nil {
 			EXE.ERROR.Println("Failed to update user:", err)
-			http.Error(w, "Failed to update user", http.StatusInternalServerError)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to update user", "")
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+		EXE.SendResponse(w, "", http.StatusOK, "User updated successfully", user)
 	}
 }
 
@@ -111,14 +90,14 @@ func DeleteUser() http.HandlerFunc {
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			EXE.ERROR.Println("Invalid user ID:", err)
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid user ID", "")
 			return
 		}
 		if err := userModel.DeleteUser(id); err != nil {
 			EXE.ERROR.Println("Failed to delete user:", err)
-			http.Error(w, "Failed to delete user", http.StatusInternalServerError)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to delete user", "")
 			return
 		}
-		w.WriteHeader(http.StatusNoContent)
+		EXE.SendResponse(w, "", http.StatusOK, "User deleted successfully", "")
 	}
 }

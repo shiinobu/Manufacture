@@ -32,10 +32,10 @@ func RegisterRoutes() {
 	// API ROUTES FOR PRODUCTS
 	protectedRouter.HandleFunc("/products", Product.ListProduct()).Methods("GET")
 	protectedRouter.HandleFunc("/products", Product.CreateProduct()).Methods("POST")
+	protectedRouter.HandleFunc("/products/materials", Product.GetProductMaterials()).Methods("GET")
 	protectedRouter.HandleFunc("/products/{id}", Product.GetProductById()).Methods("GET")
 	protectedRouter.HandleFunc("/products/{id}", Product.UpdateProduct()).Methods("PUT")
 	protectedRouter.HandleFunc("/products/{id}", Product.DeleteProduct()).Methods("DELETE")
-	protectedRouter.HandleFunc("/products/materials", Product.GetProductMaterials()).Methods("POST")
 
 	// API ROUTES FOR SUPPLIERS
 	protectedRouter.HandleFunc("/suppliers", Supplier.ListSupplier()).Methods("GET")

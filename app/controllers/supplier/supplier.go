@@ -7,21 +7,19 @@ import (
 
 	"github.com/gorilla/mux"
 
-	Log "id.benderaku.manufacture/app/helpers"
-	// Resp "id.benderaku.manufacture/app/helpers"
+	EXE "id.benderaku.manufacture/app/helpers"
 	supplierModel "id.benderaku.manufacture/app/models/supplier_model"
 )
 
 func ListSupplier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users, err := supplierModel.GetAllSupplier()
+		supplier, total, err := supplierModel.GetListSupplier(w, r)
 		if err != nil {
-			Log.ERROR.Println("Failed to fetch suppliers:", err)
-			http.Error(w, "Failed to fetch suppliers", http.StatusInternalServerError)
+			EXE.ERROR.Println("Failed to fetch suppliers:", err)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to fetch suppliers", "")
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(users)
+		EXE.SendList(w, http.StatusOK, total, "Fetched suppliers list", supplier)
 	}
 }
 
@@ -30,55 +28,34 @@ func GetSupplier() http.HandlerFunc {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			Log.ERROR.Println("Invalid supplier ID:", err)
-			http.Error(w, "Invalid supplier ID", http.StatusBadRequest)
+			EXE.ERROR.Println("Invalid supplier ID:", err)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid supplier ID", "")
 			return
 		}
 		user, err := supplierModel.GetSupplierByID(id)
 		if err != nil {
-			Log.ERROR.Println("Supplier not found:", err)
-			http.Error(w, "Supplier not found", http.StatusNotFound)
+			EXE.ERROR.Println("Supplier not found:", err)
+			EXE.SendResponse(w, "", http.StatusNotFound, "Supplier not found", "")
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
+		EXE.SendResponse(w, "", http.StatusOK, "Fetched supplier details", user)
 	}
 }
 
 func CreateSupplier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user supplierModel.Supplier
-
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			Log.ERROR.Println("Invalid request body:", err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+		var supplier supplierModel.Supplier
+		if err := json.NewDecoder(r.Body).Decode(&supplier); err != nil {
+			EXE.ERROR.Println("Invalid request body:", err)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-
-		isActive, err := supplierModel.CheckStatusSupplier(user.Username, user.Email)
-		if err != nil {
-			if err := supplierModel.CreateSupplier(&user); err != nil {
-				Log.ERROR.Println("Failed to create supplier:", err)
-				http.Error(w, "Failed to create supplier", http.StatusInternalServerError)
-				return
-			}
-		} else {
-			if isActive.Status == 0 {
-				if err := supplierModel.CreateSupplier(&user); err != nil {
-					Log.ERROR.Println("Failed to create supplier:", err)
-					http.Error(w, "Failed to create supplier", http.StatusInternalServerError)
-					return
-				}
-			} else {
-				if err := supplierModel.UpdateStatusSupplier(isActive.ID, &user); err != nil {
-					Log.ERROR.Println("Failed to update supplier status:", err)
-					http.Error(w, "Failed to update supplier status", http.StatusInternalServerError)
-					return
-				}
-			}
+		if err := supplierModel.CreateSupplier(&supplier); err != nil {
+			EXE.ERROR.Println("Failed to create supplier:", err)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to create supplier", "")
+			return
 		}
-
-		w.WriteHeader(http.StatusCreated)
+		EXE.SendResponse(w, "", http.StatusOK, "Supplier created successfully", supplier)
 	}
 }
 
@@ -87,22 +64,22 @@ func UpdateSupplier() http.HandlerFunc {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			Log.ERROR.Println("Invalid user ID:", err)
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			EXE.ERROR.Println("Invalid supplier ID:", err)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid supplier ID", "")
 			return
 		}
-		var user supplierModel.Supplier
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			Log.ERROR.Println("Invalid request body:", err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+		var supplier supplierModel.Supplier
+		if err := json.NewDecoder(r.Body).Decode(&supplier); err != nil {
+			EXE.ERROR.Println("Invalid request body:", err)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid request body", "")
 			return
 		}
-		if err := supplierModel.UpdateSupplier(id, &user); err != nil {
-			Log.ERROR.Println("Failed to update supplier:", err)
-			http.Error(w, "Failed to update supplier", http.StatusInternalServerError)
+		if err := supplierModel.UpdateSupplier(id, &supplier); err != nil {
+			EXE.ERROR.Println("Failed to update supplier:", err)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to update supplier", "")
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+		EXE.SendResponse(w, "", http.StatusOK, "Supplier updated successfully", supplier)
 	}
 }
 
@@ -111,15 +88,16 @@ func DeleteSupplier() http.HandlerFunc {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			Log.ERROR.Println("Invalid supplier ID:", err)
+			EXE.ERROR.Println("Invalid supplier ID:", err)
 			http.Error(w, "Invalid supplier ID", http.StatusBadRequest)
+			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid supplier ID", "")
 			return
 		}
 		if err := supplierModel.DeleteSupplier(id); err != nil {
-			Log.ERROR.Println("Failed to delete supplier:", err)
-			http.Error(w, "Failed to delete supplier", http.StatusInternalServerError)
+			EXE.ERROR.Println("Failed to delete supplier:", err)
+			EXE.SendResponse(w, "", http.StatusInternalServerError, "Failed to delete supplier", "")
 			return
 		}
-		w.WriteHeader(http.StatusNoContent)
+		EXE.SendResponse(w, "", http.StatusOK, "Supplier deleted successfully", "")
 	}
 }

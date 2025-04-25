@@ -13,7 +13,7 @@ import (
 func Activation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var creds struct {
-			Username string `json:"username"`
+			Email string `json:"email"`
 			Password string `json:"password"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -22,7 +22,7 @@ func Activation() http.HandlerFunc {
 			return
 		}
 
-		user, err := userModel.GetUserByUsername(creds.Username)
+		user, err := userModel.GetUserByEmail(creds.Email)
 		if err != nil {
 			EXE.ERROR.Println("User not found:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "User not found", "")
@@ -49,7 +49,7 @@ func Activation() http.HandlerFunc {
 func Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var creds struct {
-			Username string `json:"username"`
+			Email string `json:"email"`
 			Password string `json:"password"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -58,7 +58,7 @@ func Login() http.HandlerFunc {
 			return
 		}
 
-		user, err := userModel.GetUserByUsername(creds.Username)
+		user, err := userModel.GetUserByEmail(creds.Email)
 		if err != nil {
 			EXE.ERROR.Println("User not found:", err)
 			EXE.SendResponse(w, "", http.StatusUnauthorized, "User not found", "")

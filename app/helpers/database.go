@@ -82,3 +82,13 @@ func QueryExec(query string, params []any) (res sql.Result, err error) {
     }
     return res, nil
 }
+
+func Nullable(data []byte) (any, error) {
+	var json sql.NullString
+	if data != nil {
+		json = sql.NullString{String: string(data), Valid: true}
+	} else {
+		json = sql.NullString{Valid: false}
+	}
+	return json, nil
+}
