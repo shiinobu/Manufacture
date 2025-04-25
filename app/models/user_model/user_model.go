@@ -57,7 +57,7 @@ func GetListUsers(writ http.ResponseWriter, req *http.Request) ([]User, int, err
 	users := []User{}
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Email); err != nil {
+		if err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Fullname, &user.Role, &user.Islogin); err != nil {
 			return nil, 0, err
 		}
 		users = append(users, user)
@@ -126,11 +126,12 @@ func CreateUser(user *User) error {
 	}
 	status, err := CheckStatusUser(user.Email)
 	if err != nil {
-		if (status == 1) {
-			_, err = EXE.QueryExec("UPDATE tusers SET fUsername = ?, fPassword = ?, fIsLogin = 0, fDelete = 0, fFullname = ? WHERE fEmail = ?", []any{user.Username, string(hashedPassword), user.Fullname, user.Email})
-		} else {
-			_, err = EXE.QueryExec("INSERT INTO tusers (fEmail, fUsername, fFullname, fPassword, fRole) VALUES (?, ?, ?, ?)", []any{user.Email, user.Username, user.Email, string(hashedPassword), user.Role})
-		}
+		return err
+	}
+	if status == 0 {
+		_, err = EXE.QueryExec("INSERT INTO tusers (fEmail, fUsername, fFullname, fPassword, fRole) VALUES (?, ?, ?, ?, ?)", []any{user.Email, user.Username, user.Fullname, string(hashedPassword), user.Role})
+	} else {
+		_, err = EXE.QueryExec("UPDATE tusers SET fUsername = ?, fPassword = ?, fIsLogin = 0, fDelete = 0, fFullname = ?, fRole = ? WHERE fEmail = ?", []any{user.Username, string(hashedPassword), user.Fullname, user.Role, user.Email})
 	}
 	return err
 }

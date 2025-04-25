@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 
 	Auth "id.benderaku.manufacture/app/controllers/auth"
+	Customer "id.benderaku.manufacture/app/controllers/customer"
 	Product "id.benderaku.manufacture/app/controllers/product"
 	Supplier "id.benderaku.manufacture/app/controllers/supplier"
 	User "id.benderaku.manufacture/app/controllers/user"
@@ -44,4 +45,10 @@ func RegisterRoutes() {
 	protectedRouter.HandleFunc("/suppliers/{id}", Supplier.UpdateSupplier()).Methods("PUT")
 	protectedRouter.HandleFunc("/suppliers/{id}", Supplier.DeleteSupplier()).Methods("DELETE")
 
+	// API ROUTES FOR CUSTOMERS
+	protectedRouter.HandleFunc("/customers", Customer.ListCustomer()).Methods("GET")
+	protectedRouter.HandleFunc("/customers", Customer.CreateCustomer()).Methods("POST")
+	protectedRouter.HandleFunc("/customers/{id}", Customer.GetCustomer()).Methods("GET")
+	protectedRouter.HandleFunc("/customers/{id}", Customer.UpdateCustomer()).Methods("PUT")
+	protectedRouter.HandleFunc("/customers/{id}", Customer.DeleteCustomer()).Methods("DELETE")
 }
