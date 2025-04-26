@@ -32,13 +32,13 @@ func GetSupplier() http.HandlerFunc {
 			EXE.SendResponse(w, "", http.StatusBadRequest, "Invalid supplier ID", "")
 			return
 		}
-		user, err := supplierModel.GetSupplierByID(id)
+		supplier, err := supplierModel.GetSupplierByID(id)
 		if err != nil {
 			EXE.ERROR.Println("Supplier not found:", err)
 			EXE.SendResponse(w, "", http.StatusNotFound, "Supplier not found", "")
 			return
 		}
-		EXE.SendResponse(w, "", http.StatusOK, "Fetched supplier details", user)
+		EXE.SendResponse(w, "", http.StatusOK, "Fetched supplier details", supplier)
 	}
 }
 

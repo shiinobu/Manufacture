@@ -16,3 +16,26 @@ ERROR: 2025/04/25 23:18:20 product.go:74: Failed to create product because code 
 ERROR: 2025/04/25 23:19:16 product.go:74: Failed to create product because code TLR01 already used
 ERROR: 2025/04/25 23:24:21 product.go:74: Failed to create product because code TLR01 already used
 ERROR: 2025/04/25 23:36:48 supplier.go:60: Failed to create supplier because code BBS already used
+ERROR: 2025/04/26 09:02:27 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 09:02:44 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 09:02:53 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 09:55:22 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 09:56:24 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:00:56 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:01:14 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:05:33 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:06:04 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:06:30 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:07:50 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:08:26 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:09:39 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:09:54 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:10:23 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:12:54 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:13:28 auth.go:63: User not activated, please activated first
+ERROR: 2025/04/26 10:21:53 auth.go:79: JSON key 'email' not found or incorrect
+ERROR: 2025/04/26 10:22:52 auth.go:84: Invalid request body: EOF
+ERROR: 2025/04/26 10:23:06 auth.go:84: Invalid request body: EOF
+ERROR: 2025/04/26 10:23:29 auth.go:84: Invalid request body: EOF
+ERROR: 2025/04/26 10:25:32 auth.go:84: Invalid request body: EOF
+ERROR: 2025/04/26 10:26:43 auth.go:91: Invalid request body: EOF
