@@ -1,4 +1,4 @@
-# Manufacture Backend API
+# Manufacture System API
 
 A Go-based backend application for managing core manufacturing data such as users, customers, suppliers, products, and purchase transactions.
 
@@ -98,8 +98,8 @@ Before running the application locally, make sure you have:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shiinobu/Manufacture.git
-cd Manufacture
+git clone https://github.com/shiinobu/manufacture-system-api.git
+cd manufacture-system-api
 ```
 
 ### 2. Configure environment variables
