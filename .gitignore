@@ -1,0 +1,22 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Go
+bin/
+tmp/
+*.exe
+*.test
+
+# Logs
+logs/*.log
+
+# Air live-reload artifacts
+.air/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
