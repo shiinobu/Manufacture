@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"id.benderaku.manufacture/app/helpers"
 )
 
@@ -28,7 +30,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		claims, ok := token.Claims.(map[string]interface{})
+		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			helpers.SendResponse(w, "", http.StatusUnauthorized, "Invalid token claims", "")
 			return
