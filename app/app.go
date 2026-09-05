@@ -10,16 +10,17 @@ import (
 	R "id.benderaku.manufacture/app/routes"
 )
 
-func Initialize() {
+func Initialize() error {
 	if err := EXE.InitDB(); err != nil {
-		log.Fatal("Failed to initialize database:", err)
+		return err
 	}
 
 	if err := EXE.Logs(); err != nil {
-		log.Fatal("Failed to set up logging:", err)
+		return err
 	}
 
 	R.RegisterRoutes()
+	return nil
 }
 
 func Run(addr string) error {
@@ -29,10 +30,7 @@ func Run(addr string) error {
 		handlers.AllowedHeaders([]string{"Content-Type", "token"}),
 		handlers.AllowCredentials(),
 	)
-	err := http.ListenAndServe(addr, cors(R.Router))
-	if err != nil {
-		log.Fatal("Server failed to start:", err)
-	}
+
 	log.Println("Server starting on", addr)
-	return nil
+	return http.ListenAndServe(addr, cors(R.Router))
 }
