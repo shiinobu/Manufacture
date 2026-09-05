@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -20,12 +20,11 @@ type DB struct {
 var RunDB *sql.DB
 
 func InitDB() error {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found, relying on system environment variables")
+	if err := godotenv.Load(); err != nil {
+		// .env is optional when environment variables are provided by the runtime.
 	}
 
-	DBCONFIG := DB{
+	config := DB{
 		DBUSER: os.Getenv("DB_USER"),
 		DBPASS: os.Getenv("DB_PASS"),
 		DBNAME: os.Getenv("DB_NAME"),
@@ -33,52 +32,37 @@ func InitDB() error {
 		DBHOST: os.Getenv("DB_HOST"),
 	}
 
-	if DBCONFIG.DBUSER == "" || DBCONFIG.DBPASS == "" || DBCONFIG.DBNAME == "" || DBCONFIG.DBPORT == "" || DBCONFIG.DBHOST == "" {
-		log.Fatal("Missing required database environment variables")
+	if config.DBUSER == "" || config.DBPASS == "" || config.DBNAME == "" || config.DBPORT == "" || config.DBHOST == "" {
+		return fmt.Errorf("missing required database environment variables")
 	}
 
-	return Connection(
-		DBCONFIG.DBUSER,
-		DBCONFIG.DBPASS,
-		DBCONFIG.DBNAME,
-		DBCONFIG.DBPORT,
-		DBCONFIG.DBHOST,
-	)
+	return Connection(config.DBUSER, config.DBPASS, config.DBNAME, config.DBPORT, config.DBHOST)
 }
 
 func Connection(dbuser, dbpassword, dbname, dbport, dbhost string) error {
-	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname
-	dbOK, err := sql.Open("mysql", dsn)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbuser, dbpassword, dbhost, dbport, dbname)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		return fmt.Errorf("open database connection: %w", err)
 	}
-	if err = dbOK.Ping(); err != nil {
-		log.Fatal("Database ping failed:", err)
+
+	if err := db.Ping(); err != nil {
+		_ = db.Close()
+		return fmt.Errorf("ping database: %w", err)
 	}
-	RunDB = dbOK
+
+	RunDB = db
 	return nil
 }
 
 func Query(query string) (*sql.Rows, error) {
-	rows, err := RunDB.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	return rows, nil
+	return RunDB.Query(query)
 }
 
 func QueryParams(query string, params []any) (*sql.Rows, error) {
-	rows, err := RunDB.Query(query, params...)
-	if err != nil {
-		return nil, err
-	}
-	return rows, nil
+	return RunDB.Query(query, params...)
 }
 
-func QueryExec(query string, params []any) (res sql.Result, err error) {
-	res, err = RunDB.Exec(query, params...)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+func QueryExec(query string, params []any) (sql.Result, error) {
+	return RunDB.Exec(query, params...)
 }
